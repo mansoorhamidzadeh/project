@@ -63,9 +63,23 @@ class ProductListCreateApiView(generics.ListAPIView):
     serializer_class = ArticleSerializers
 
 
+class ProductDetailView(generics.RetrieveAPIView):
+    queryset = Article.objects.all()
+    serializer_class = ArticleSerializers
+class PeoductCreateView(generics.ListCreateAPIView):
+    queryset = Article.objects.all()
+    serializer_class = ArticleSerializers
+
+    def perform_create(self, serializer):
+        title=serializer.validated_data.get('title')
+        content=serializer.validated_data.get('content')
+        if content is None:
+            content=title
+        serializer.save(content=content)
+
 @api_view(['GET'])
 def Api(request, ):
     if request.method == 'GET':
         obj = Article.objects.all()
-        serializer = ArticleSerializers(obj,many=True)
-        return JsonResponse(serializer.data,safe=False)
+        serializer = ArticleSerializers(obj, many=True)
+        return JsonResponse(serializer.data, safe=False)
