@@ -1,8 +1,8 @@
 from django.http import JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import ListView, DetailView,CreateView,UpdateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from rest_framework.decorators import api_view
 
 from .models import *
@@ -60,25 +60,36 @@ def update_view(request, id=id):
     return render(request, 'web/create_view.html', context)
 
 
-
 class MyView(ListView):
     model = Article
     template_name = 'web/list_view.html'
     context_object_name = 'objects'
+
+
 class MyDetailView(DetailView):
-    model = Article
+
     template_name = 'web/detail_view.html'
     context_object_name = 'object '
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(
+            Article.objects.filter(pk=self.kwargs.get('pk'))
+        )
+
+
 class MyCreateView(CreateView):
     model = Article
     form_class = ArticleForm
     template_name = 'web/create_view.html'
     success_url = '/'
+
+
 class MyUpdateView(UpdateView):
     model = Article
     form_class = ArticleForm
     template_name = 'web/create_view.html'
     success_url = '/'
+
 
 # class ProductListCreateApiView(generics.ListAPIView):
 #     queryset = Article.objects.all()
@@ -102,9 +113,9 @@ class MyUpdateView(UpdateView):
 #         serializer.save(content=content)
 
 
-@api_view(['GET'])
-def Api(request, ):
-    if request.method == 'GET':
-        obj = Article.objects.all()
-        serializer = ArticleSerializers(obj, many=True)
-        return JsonResponse(serializer.data, safe=False)
+# @api_view(['GET'])
+# def Api(request, ):
+#     if request.method == 'GET':
+#         obj = Article.objects.all()
+#         serializer = ArticleSerializers(obj, many=True)
+#         return JsonResponse(serializer.data, safe=False)

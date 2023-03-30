@@ -21,6 +21,7 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('web.urls')),
-    path('snippet/',include('snippets.urls'))
+    path('snippet/',include('snippets.urls')),
+    path('apiview/',include('api.urls'))
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
