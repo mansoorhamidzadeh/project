@@ -11,6 +11,7 @@ class ArticleList(ListCreateAPIView):
     serializer_class = ArticleSerializer
 
 
+
 class ArticleDetail(RetrieveUpdateDestroyAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
@@ -25,5 +26,5 @@ class Users(ListCreateAPIView):
 class UserDetail(RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    lookup_field = 'pk'
+
     permission_classes = (IsAdminUser,)

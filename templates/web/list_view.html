@@ -2,7 +2,7 @@
 
     {% for object in objects %}
 
-        <li><a href="{% url 'detail_view' object.id %}">{{ object.title }}</a></li>
-        <li><img src="{{object.image.url}}" width="150"  height="100" style="margin-top: 30px; border-radius: 5px; "></li>
+        <li><a href="{% url 'detail_view' object.id %}">{{ object.title }} {{ object.id }}</a></li>
+
     {% endfor %}
 </ul>

@@ -7,7 +7,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = '__all__'
+        fields = ['username']
 
 
 
@@ -18,8 +18,9 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class ArticleSerializer(serializers.ModelSerializer):
-    category = CategorySerializer(many=True)
-    author = UserSerializer('username')
+
+    # category = CategorySerializer(many=True,read_only=False)
+    #author = UserSerializer('username')
 
     class Meta:
         model = Article

@@ -2,7 +2,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from rest_framework.decorators import api_view
 
 from .models import *
@@ -14,67 +14,30 @@ from .serializers import ArticleSerializers
 
 # Create your views here.
 
-def list_view(request):
-    objects = Article.objects.all()
-
-    context = {
-        'objects': objects
-    }
-
-    return render(request, 'web/list_view.html', context)
-
-
-def detail_view(request, id):
-    obj = Article.objects.get(id=id)
-    context = {
-        'object': obj
-    }
-
-    return render(request, 'web/detail_view.html', context)
-
-
-def create_view(request):
-    form = ArticleForm()
-    if request.method == 'POST':
-        form = ArticleForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('/')
-
-    context = {
-        'form': form
-    }
-    return render(request, 'web/create_view.html', context)
-
-
-def update_view(request, id=id):
-    obj = Article.objects.get(id=id)
-    form = ArticleForm(request.POST or None, instance=obj)
-    if form.is_valid():
-        form.save()
-        return redirect('/')
-    context = {
-        'form': form,
-        'obj': obj
-    }
-    return render(request, 'web/create_view.html', context)
-
-
+# generic Views
 class MyView(ListView):
     model = Article
     template_name = 'web/list_view.html'
     context_object_name = 'objects'
 
+    def get_queryset(self):
+        queryset = Article.objects.filter(is_special=True)
+        return queryset
+
 
 class MyDetailView(DetailView):
-
+    model = Article
     template_name = 'web/detail_view.html'
-    context_object_name = 'object '
+    context_object_name = 'object'
 
-    def get_object(self, queryset=None):
-        return get_object_or_404(
-            Article.objects.filter(pk=self.kwargs.get('pk'))
-        )
+    # def get_object(self, queryset=None):
+    #     pk=self.kwargs.get('pkk')
+    #     return Article.objects.get(pk=pk)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        article = self.get_object()
+        context['category'] = article.category.all()
+        return context
 
 
 class MyCreateView(CreateView):
@@ -83,12 +46,86 @@ class MyCreateView(CreateView):
     template_name = 'web/create_view.html'
     success_url = '/'
 
+    def form_valid(self, form):
+        obj = form.save(commit=False)
+        obj.author = self.request.user
+        obj.save
+        return super(MyCreateView, self).form_valid(form)
+
 
 class MyUpdateView(UpdateView):
     model = Article
     form_class = ArticleForm
     template_name = 'web/create_view.html'
     success_url = '/'
+
+
+class MyDeleteView(DeleteView):
+    model = Article
+    template_name = 'web/delete_view.html'
+    success_url = '/'
+# def list_view(request):
+#     objects = Article.objects.all()
+#
+#     context = {
+#         'objects': objects
+#     }
+#
+#     return render(request, 'web/list_view.html', context)
+#
+#
+# def detail_view(request, id):
+#     obj = Article.objects.get(id=id)
+#     category = ArticleCategory.objects.filter(article__title=obj.title)
+
+#     context = {
+#         'object': obj,
+#         'category': category
+#     }
+#
+#     return render(request, 'web/detail_view.html', context)
+#
+#
+# def create_view(request):
+#     form = ArticleForm()
+#
+#     if request.method == 'POST':
+#         form = ArticleForm(request.POST)
+#         if form.is_valid():
+#             print(request.user)
+#             obj = form.save(commit=False)
+#             obj.author = request.user
+#             obj.save()
+#             return redirect('/')
+#
+#     context = {
+#         'form': form
+#     }
+#     return render(request, 'web/create_view.html', context)
+#
+#
+# def update_view(request, id=id):
+#     obj = Article.objects.get(id=id)
+#     form = ArticleForm(request.POST or None, instance=obj)
+#     if form.is_valid():
+#         form.save()
+#         return redirect('/')
+#     context = {
+#         'form': form,
+#         'obj': obj
+#     }
+#     return render(request, 'web/create_view.html', context)
+#
+#
+# def delete_view(request, id):
+#     object = Article.objects.get(id=id)
+#     context = {}
+#     if request.method == 'POST':
+#         object.delete()
+#         return redirect('/')
+#     return render(request, 'web/delete_view.html', context)
+
+
 
 
 # class ProductListCreateApiView(generics.ListAPIView):

@@ -1,3 +1,6 @@
 {{ object.title }}
 {{ object.content }}
-{{ object.category.title }}
+{% for cat in category %}
+{{ cat.title }}
+{% endfor %}
+<li><a href="{% url 'delete' object.id %}">Delete</a></li>
