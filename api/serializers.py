@@ -3,25 +3,34 @@ from web.models import Article, ArticleCategory
 from django.contrib.auth.models import User
 
 
-class UserSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = User
-        fields = ['username']
-
-
+class UserSerializer(serializers.RelatedField):
+    def to_representation(self, value):
+        return value.username
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = ArticleCategory
-        fields = '__all__'
+        fields = ['title']
 
 
 class ArticleSerializer(serializers.ModelSerializer):
-
-    # category = CategorySerializer(many=True,read_only=False)
-    #author = UserSerializer('username')
+    # def get_author(self,obj):
+    #     return obj.author.username
+    #author = serializers.SerializerMethodField('get_author')
+    #category = serializers.SlugRelatedField(many=True, slug_field='title', queryset=ArticleCategory.objects.all())
+    category=CategorySerializer(many=True,read_only=True)
 
     class Meta:
         model = Article
-        exclude = ['created', 'is_special']
+        fields = [
+            'id',
+            'author',
+            'title',
+            'content',
+            'category',
+            'published',
+            'created',
+            'is_special',
+            'status',
+        ]
+    #

@@ -14,10 +14,10 @@ class Article(models.Model):
         ('i', 'investigation'),
         ('b', 'back')
     )
-    author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, verbose_name='Author')
+    author = models.ForeignKey(User,on_delete=models.CASCADE)
     title = models.CharField(max_length=120)
     content = models.TextField()
-    category = models.ManyToManyField('ArticleCategory')
+    category = models.ManyToManyField('ArticleCategory',null=True,blank=True)
     # image=models.ImageField(upload_to='images')
     published = models.DateTimeField(default=timezone.now)
     created = models.DateTimeField(auto_now=True)

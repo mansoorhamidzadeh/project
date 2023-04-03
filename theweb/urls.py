@@ -17,11 +17,16 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
+from rest_framework.authtoken.views import  obtain_auth_token
+
+from api.views import RevokeToken
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('web.urls')),
     path('snippet/',include('snippets.urls')),
-    path('apiview/',include('api.urls'))
+    path('apiview/',include('api.urls')),
+    path('apiview/token-auth/',obtain_auth_token),
+    path('apiview/revoke/',RevokeToken.as_view())
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
